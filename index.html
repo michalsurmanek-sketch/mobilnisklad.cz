@@ -1,285 +1,340 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>mobilnisklad.cz – Mobilní sklady a kontejnery</title>
-  <meta name="description" content="Mobilní sklady, kontejnery a regály – pronájem i prodej. Doprava do 48 hodin, montáž na místě." />
+  <title>mobilnisklad.cz – Mobilní sklady, kontejnery a regály</title>
+
+  <!-- Google Fonts (CZ diakritika) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Roboto', 'ui-sans-serif', 'system-ui'] }}}}
+  </script>
+
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <style>
     html { scroll-behavior: smooth; }
-    body { font-family: Roboto, system-ui, -apple-system, Segoe UI, Arial, Noto Sans, "Apple Color Emoji","Segoe UI Emoji"; }
-    .container { max-width: 72rem; }
-    /* Jednoduché utility bez @apply (fungují i bez build procesu) */
-    .card { border-radius: 1rem; border: 1px solid rgb(226 232 240); background: #fff; }
-    .btn { display:inline-flex; align-items:center; justify-content:center; border-radius:1rem; padding:.6rem 1rem; font-weight:700; }
-    .btn-primary { background:#2563eb; color:#fff; }
-    .btn-outline { border:1px solid rgb(203 213 225); }
-    .badge { display:inline-flex; align-items:center; border-radius:.75rem; border:1px solid rgba(37,99,235,.2); background: rgba(37,99,235,.1); color:#1d4ed8; padding:.25rem .6rem; font-size:.75rem; font-weight:700; }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-white to-slate-50 text-slate-900">
-  <!-- Header -->
-  <header id="siteHeader" class="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200">
-    <div class="mx-auto container px-4 py-3 flex items-center justify-between">
-      <a href="#" class="flex items-center gap-3">
+<body class="min-h-screen bg-gradient-to-b from-white to-slate-50 text-slate-900 font-sans">
+  <!-- Top bar -->
+  <header id="site-header" class="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white grid place-items-center font-extrabold">MS</div>
         <div class="leading-tight">
           <div class="font-extrabold text-xl tracking-tight">mobilnisklad.cz</div>
           <div class="text-xs -mt-0.5 text-slate-500">Mobilní sklady, kontejnery a regály – pronájem i prodej</div>
         </div>
-      </a>
+      </div>
       <nav class="hidden md:flex items-center gap-6 font-medium text-sm">
         <a class="hover:text-blue-700" href="#sluzby">Služby</a>
         <a class="hover:text-blue-700" href="#produkty">Produkty</a>
         <a class="hover:text-blue-700" href="#ceny">Ceník</a>
         <a class="hover:text-blue-700" href="#faq">FAQ</a>
         <a class="hover:text-blue-700" href="#kontakt">Kontakt</a>
-        <a class="btn btn-primary" href="#kontakt">Poptat řešení</a>
+        <a href="#kontakt" class="rounded-2xl bg-blue-600 text-white px-4 py-2">Poptat řešení</a>
       </nav>
-      <button id="menuBtn" class="md:hidden p-2 rounded-xl border border-slate-300" aria-label="Otevřít menu">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+
+      <!-- Hamburger -->
+      <button
+        id="hamburgerBtn"
+        class="md:hidden p-2 rounded-xl border border-slate-300"
+        aria-label="Otevřít menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        type="button"
+      >
+        <svg id="hamburgerIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
       </button>
     </div>
   </header>
 
-  <!-- Mobile menu overlay -->
-  <div id="mobileOverlay" class="fixed inset-0 hidden z-50">
-    <div class="absolute inset-0 bg-black/40" id="overlayBg"></div>
-    <nav id="mobileNav" class="absolute left-0 right-0 bg-white border-t border-slate-200 shadow-lg">
-      <div class="mx-auto container px-4 py-3 grid gap-2 text-sm">
-        <a class="py-2" href="#sluzby">Služby</a>
-        <a class="py-2" href="#produkty">Produkty</a>
-        <a class="py-2" href="#ceny">Ceník</a>
-        <a class="py-2" href="#faq">FAQ</a>
-        <a class="py-2" href="#kontakt">Kontakt</a>
-        <a class="btn btn-primary mt-1" href="#kontakt">Poptat řešení</a>
-      </div>
-    </nav>
-  </div>
+  <!-- Mobile menu (overlay) – začíná pod headerem (nepřekryje ho) -->
+  <nav
+    id="mobile-menu"
+    class="md:hidden fixed inset-x-0 bottom-0 z-50 bg-white border-t border-slate-200 hidden overflow-y-auto"
+    style="top:0"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="mx-auto max-w-7xl px-4 pb-8 grid gap-2 text-sm">
+      <a class="py-3 border-b border-slate-200" href="#sluzby">Služby</a>
+      <a class="py-3 border-b border-slate-200" href="#produkty">Produkty</a>
+      <a class="py-3 border-b border-slate-200" href="#ceny">Ceník</a>
+      <a class="py-3 border-b border-slate-200" href="#faq">FAQ</a>
+      <a class="py-3 border-b border-slate-200" href="#kontakt">Kontakt</a>
+      <a href="#kontakt" class="mt-2 rounded-2xl px-4 py-3 font-medium bg-blue-600 text-white text-left inline-block">Poptat řešení</a>
+    </div>
+  </nav>
 
   <!-- Hero -->
   <section class="relative overflow-hidden">
     <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50 via-white to-white"></div>
-    <div class="mx-auto container px-4 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
       <div>
-        <span class="badge mb-4">Nový projekt AO Group</span>
-        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">Sklad kdekoliv. <span class="text-blue-700">Rychle, čistě, bezpečně.</span></h1>
-        <p class="mt-4 text-lg text-slate-600 max-w-prose">Dodáme <strong>mobilní skladové řešení</strong> na klíč: kontejner, regály, zabezpečení i dopravu. Pronájem na týdny či měsíce nebo <strong>prodej</strong> na trvalo. Ideální pro stavby, e‑shopy, sezónní zásoby a eventy.</p>
+        <span class="inline-block bg-blue-600/10 text-blue-700 border border-blue-600/20 rounded px-2.5 py-1 text-xs font-medium mb-4">Nový projekt AO Group</span>
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+          Sklad kdekoliv. <span class="text-blue-700">Rychle, čistě, bezpečně.</span>
+        </h1>
+        <p class="mt-4 text-lg text-slate-600 max-w-prose">
+          Dodáme <strong>mobilní skladové řešení</strong> na klíč: kontejner, regály, zabezpečení i dopravu. Pronájem na týdny či měsíce nebo
+          <strong> prodej</strong> na trvalo. Ideální pro stavby, e-shopy, sezónní zásoby a eventy.
+        </p>
         <div class="mt-6 flex flex-wrap gap-3">
-          <a href="#kontakt" class="btn btn-primary text-base">Nezávazná poptávka</a>
-          <a href="#produkty" class="btn btn-outline text-base">Prohlédnout produkty</a>
+          <a href="#kontakt" class="rounded-2xl bg-blue-600 text-white px-5 py-3 text-base font-medium">Nezávazná poptávka</a>
+          <a href="#produkty" class="rounded-2xl border border-slate-300 px-5 py-3 text-base font-medium">Prohlédnout produkty</a>
         </div>
         <ul class="mt-6 grid sm:grid-cols-3 gap-3 text-sm text-slate-600">
           <li class="flex items-center gap-2 bg-white/60 border border-slate-200 rounded-xl px-3 py-2">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
-            <span>Pojištěné a zabezpečené</span>
+            <i data-lucide="shield" class="w-4 h-4"></i><span>Pojištěné a zabezpečené</span>
           </li>
           <li class="flex items-center gap-2 bg-white/60 border border-slate-200 rounded-xl px-3 py-2">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 17h4M7 21h10M5 17l1-4h12l1 4M16 5h-1a2 2 0 0 0-2 2v3h3l3 3"/></svg>
-            <span>Doprava do 48 hodin</span>
+            <i data-lucide="truck" class="w-4 h-4"></i><span>Doprava do 48 hodin</span>
           </li>
           <li class="flex items-center gap-2 bg-white/60 border border-slate-200 rounded-xl px-3 py-2">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6h4M6 10h12M4 14h16M6 18h12"/></svg>
-            <span>Montáž na místě</span>
+            <i data-lucide="wrench" class="w-4 h-4"></i><span>Montáž na místě</span>
           </li>
         </ul>
       </div>
       <div>
         <div class="aspect-[4/3] rounded-3xl border border-slate-200 shadow-sm bg-white grid place-items-center">
-          <svg class="w-20 h-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18v10H3z"/><path d="M7 7v10"/><path d="M17 7v10"/><path d="M3 11h18"/></svg>
+          <i data-lucide="warehouse" class="w-20 h-20"></i>
+          <!-- TODO: nahradit reálnou fotkou / 3D vizualizací kontejneru a regálů -->
         </div>
       </div>
     </div>
   </section>
 
   <!-- Služby -->
-  <section id="sluzby" class="mx-auto container px-4 py-16">
+  <section id="sluzby" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
     <h2 class="text-3xl font-bold tracking-tight">Co pro vás zařídíme</h2>
     <p class="mt-2 text-slate-600">Kompletní služba od návrhu po dopravu a instalaci.</p>
     <div class="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="card p-5">
-        <div class="flex items-center gap-3 mb-2">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2v10"/><path d="M3 16l2 2h14l2-2"/></svg>
-          <h3 class="text-lg font-semibold">Pronájem skladů</h3>
+      <!-- Card -->
+      <div class="rounded-2xl border border-slate-200 bg-white">
+        <div class="p-5 flex items-center gap-3">
+          <i data-lucide="package" class="w-5 h-5"></i>
+          <div class="text-lg font-semibold">Pronájem skladů</div>
         </div>
-        <p class="text-sm text-slate-600">Kontejnery 10–20 ft, krátkodobě i dlouhodobě.</p>
+        <div class="px-5 pb-5 text-sm text-slate-600">Kontejnery 10–20 ft, krátkodobě i dlouhodobě.</div>
       </div>
-      <div class="card p-5">
-        <div class="flex items-center gap-3 mb-2">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v12"/><path d="M18 3v12"/><path d="M2 21h20"/></svg>
-          <h3 class="text-lg font-semibold">Prodej na míru</h3>
+      <div class="rounded-2xl border border-slate-200 bg-white">
+        <div class="p-5 flex items-center gap-3">
+          <i data-lucide="wrench" class="w-5 h-5"></i>
+          <div class="text-lg font-semibold">Prodej na míru</div>
         </div>
-        <p class="text-sm text-slate-600">Nové i repasované, regály, zabezpečení, elektro.</p>
+        <div class="px-5 pb-5 text-sm text-slate-600">Nové i repasované, regály, zabezpečení, elektro.</div>
       </div>
-      <div class="card p-5">
-        <div class="flex items-center gap-3 mb-2">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 17h4M7 21h10M5 17l1-4h12l1 4M16 5h-1a2 2 0 0 0-2 2v3h3l3 3"/></svg>
-          <h3 class="text-lg font-semibold">Doprava &amp; usazení</h3>
+      <div class="rounded-2xl border border-slate-200 bg-white">
+        <div class="p-5 flex items-center gap-3">
+          <i data-lucide="truck" class="w-5 h-5"></i>
+          <div class="text-lg font-semibold">Doprava &amp; usazení</div>
         </div>
-        <p class="text-sm text-slate-600">Vozíme vlastní dopravou, jeřábem přesně na místo.</p>
+        <div class="px-5 pb-5 text-sm text-slate-600">Vozíme vlastní dopravou, jeřábem přesně na místo.</div>
       </div>
-      <div class="card p-5">
-        <div class="flex items-center gap-3 mb-2">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
-          <h3 class="text-lg font-semibold">Servis &amp; monitoring</h3>
+      <div class="rounded-2xl border border-slate-200 bg-white">
+        <div class="p-5 flex items-center gap-3">
+          <i data-lucide="shield" class="w-5 h-5"></i>
+          <div class="text-lg font-semibold">Servis &amp; monitoring</div>
         </div>
-        <p class="text-sm text-slate-600">Zámky, CCTV ready, pojištění a pravidelné kontroly.</p>
+        <div class="px-5 pb-5 text-sm text-slate-600">Zámky, CCTV ready, pojištění a pravidelné kontroly.</div>
       </div>
     </div>
   </section>
 
   <!-- Produkty -->
   <section id="produkty" class="bg-white border-y border-slate-200">
-    <div class="mx-auto container px-4 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
       <h2 class="text-3xl font-bold tracking-tight">Produkty</h2>
       <p class="mt-2 text-slate-600">Nejčastější konfigurace. Další varianty připravíme na vyžádání.</p>
+
       <div class="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="card p-5 hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between mb-1">
-            <h3 class="text-lg font-semibold">Kontejner 10 ft</h3>
-            <span class="badge">od 3 490 Kč/měs.</span>
+        <!-- Product card -->
+        <div class="rounded-2xl border border-slate-200 bg-white hover:shadow-md transition-shadow">
+          <div class="p-5 flex items-center justify-between">
+            <div class="text-lg font-semibold">Kontejner 10 ft</div>
+            <span class="rounded-xl bg-slate-100 text-slate-700 text-xs px-2 py-1 border border-slate-200">od 3 490 Kč/měs.</span>
           </div>
-          <p class="text-sm text-slate-600">Kompaktní sklad pro stavby a eventy.</p>
+          <div class="px-5 pb-5 text-sm text-slate-600">Kompaktní sklad pro stavby a eventy.</div>
         </div>
-        <div class="card p-5 hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between mb-1">
-            <h3 class="text-lg font-semibold">Kontejner 20 ft</h3>
-            <span class="badge">od 4 990 Kč/měs.</span>
+
+        <div class="rounded-2xl border border-slate-200 bg-white hover:shadow-md transition-shadow">
+          <div class="p-5 flex items-center justify-between">
+            <div class="text-lg font-semibold">Kontejner 20 ft</div>
+            <span class="rounded-xl bg-slate-100 text-slate-700 text-xs px-2 py-1 border border-slate-200">od 4 990 Kč/měs.</span>
           </div>
-          <p class="text-sm text-slate-600">Univerzální velikost pro paletové zásoby.</p>
+          <div class="px-5 pb-5 text-sm text-slate-600">Univerzální velikost pro paletové zásoby.</div>
         </div>
-        <div class="card p-5 hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between mb-1">
-            <h3 class="text-lg font-semibold">Regálový set</h3>
-            <span class="badge">od 2 990 Kč/sada</span>
+
+        <div class="rounded-2xl border border-slate-200 bg-white hover:shadow-md transition-shadow">
+          <div class="p-5 flex items-center justify-between">
+            <div class="text-lg font-semibold">Regálový set</div>
+            <span class="rounded-xl bg-slate-100 text-slate-700 text-xs px-2 py-1 border border-slate-200">od 2 990 Kč/sada</span>
           </div>
-          <p class="text-sm text-slate-600">Kovové regály 200×100×50, nosnost 200 kg/police.</p>
+          <div class="px-5 pb-5 text-sm text-slate-600">Kovové regály 200×100×50, nosnost 200 kg/police.</div>
         </div>
-        <div class="card p-5 hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between mb-1">
-            <h3 class="text-lg font-semibold">Sada zabezpečení</h3>
-            <span class="badge">od 1 990 Kč</span>
+
+        <div class="rounded-2xl border border-slate-200 bg-white hover:shadow-md transition-shadow">
+          <div class="p-5 flex items-center justify-between">
+            <div class="text-lg font-semibold">Sada zabezpečení</div>
+            <span class="rounded-xl bg-slate-100 text-slate-700 text-xs px-2 py-1 border border-slate-200">od 1 990 Kč</span>
           </div>
-          <p class="text-sm text-slate-600">Petlice, bezpečnostní zámek, příprava pro CCTV.</p>
+          <div class="px-5 pb-5 text-sm text-slate-600">Petlice, bezpečnostní zámek, příprava pro CCTV.</div>
         </div>
-        <div class="card p-5 hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between mb-1">
-            <h3 class="text-lg font-semibold">Doprava a usazení</h3>
-            <span class="badge">od 2 500 Kč</span>
+
+        <div class="rounded-2xl border border-slate-200 bg-white hover:shadow-md transition-shadow">
+          <div class="p-5 flex items-center justify-between">
+            <div class="text-lg font-semibold">Doprava a usazení</div>
+            <span class="rounded-xl bg-slate-100 text-slate-700 text-xs px-2 py-1 border border-slate-200">od 2 500 Kč</span>
           </div>
-          <p class="text-sm text-slate-600">Paušál v rámci Zlínského/Brněnského kraje.</p>
+          <div class="px-5 pb-5 text-sm text-slate-600">Paušál v rámci Zlínského/Brněnského kraje.</div>
         </div>
-        <div class="card p-5 hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between mb-1">
-            <h3 class="text-lg font-semibold">Elektro &amp; světla</h3>
-            <span class="badge">na poptávku</span>
+
+        <div class="rounded-2xl border border-slate-200 bg-white hover:shadow-md transition-shadow">
+          <div class="p-5 flex items-center justify-between">
+            <div class="text-lg font-semibold">Elektro &amp; světla</div>
+            <span class="rounded-xl bg-slate-100 text-slate-700 text-xs px-2 py-1 border border-slate-200">na poptávku</span>
           </div>
-          <p class="text-sm text-slate-600">LED osvětlení, zásuvky, venkovní přívod.</p>
+          <div class="px-5 pb-5 text-sm text-slate-600">LED osvětlení, zásuvky, venkovní přívod.</div>
         </div>
       </div>
+
       <div class="mt-8 flex justify-center">
-        <a href="#" class="btn btn-outline rounded-2xl">Celý katalog (PDF)</a>
+        <a href="#" class="rounded-2xl border border-slate-300 px-5 py-3 text-base font-medium">Celý katalog (PDF)</a>
       </div>
     </div>
   </section>
 
   <!-- Ceník -->
-  <section id="ceny" class="mx-auto container px-4 py-16">
+  <section id="ceny" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
     <h2 class="text-3xl font-bold tracking-tight">Balíčky na klíč</h2>
     <p class="mt-2 text-slate-600">Transparentní ceny, jasné dodání. Uvedené ceny jsou bez DPH.</p>
+
     <div class="mt-8 grid md:grid-cols-3 gap-6">
-      <div class="card p-5">
-        <div class="flex items-baseline justify-between mb-2">
-          <span class="font-semibold">Start</span>
-          <span class="text-3xl font-extrabold">6 990 Kč/měs.</span>
+      <!-- Tier -->
+      <div class="rounded-2xl border border-slate-200 bg-white">
+        <div class="p-5">
+          <div class="flex items-baseline justify-between">
+            <span class="text-lg font-semibold">Start</span>
+            <span class="text-3xl font-extrabold">6 990 Kč/měs.</span>
+          </div>
         </div>
-        <ul class="space-y-2 text-sm text-slate-700">
-          <li class="flex gap-2"><span>•</span>10 ft kontejner (pronájem)</li>
-          <li class="flex gap-2"><span>•</span>Základní regály 2×</li>
-          <li class="flex gap-2"><span>•</span>Doprava do 30 km</li>
-        </ul>
-        <a class="btn btn-primary w-full mt-6 rounded-2xl" href="#kontakt">Objednat</a>
+        <div class="px-5 pb-5">
+          <ul class="space-y-2 text-sm text-slate-700">
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>10 ft kontejner (pronájem)</li>
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>Základní regály 2×</li>
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>Doprava do 30 km</li>
+          </ul>
+          <a href="#kontakt" class="w-full mt-6 rounded-2xl bg-blue-600 text-white px-4 py-2 inline-block text-center">Objednat</a>
+        </div>
       </div>
-      <div class="card p-5" style="border-color:#2563eb; box-shadow:0 8px 24px rgba(37,99,235,.15)">
-        <div class="flex items-baseline justify-between mb-2">
-          <span class="font-semibold">Pro</span>
-          <span class="text-3xl font-extrabold">9 990 Kč/měs.</span>
+
+      <div class="rounded-2xl border border-blue-600 shadow-md bg-white">
+        <div class="p-5">
+          <div class="flex items-baseline justify-between">
+            <span class="text-lg font-semibold">Pro</span>
+            <span class="text-3xl font-extrabold">9 990 Kč/měs.</span>
+          </div>
         </div>
-        <ul class="space-y-2 text-sm text-slate-700">
-          <li class="flex gap-2"><span>•</span>20 ft kontejner (pronájem)</li>
-          <li class="flex gap-2"><span>•</span>Regály 4×</li>
-          <li class="flex gap-2"><span>•</span>Zabezpečení + zámek</li>
-          <li class="flex gap-2"><span>•</span>Doprava do 60 km</li>
-        </ul>
-        <a class="btn btn-primary w-full mt-6 rounded-2xl" href="#kontakt">Objednat</a>
+        <div class="px-5 pb-5">
+          <ul class="space-y-2 text-sm text-slate-700">
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>20 ft kontejner (pronájem)</li>
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>Regály 4×</li>
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>Zabezpečení + zámek</li>
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>Doprava do 60 km</li>
+          </ul>
+          <a href="#kontakt" class="w-full mt-6 rounded-2xl bg-blue-600 text-white px-4 py-2 inline-block text-center">Objednat</a>
+        </div>
       </div>
-      <div class="card p-5">
-        <div class="flex items-baseline justify-between mb-2">
-          <span class="font-semibold">Max</span>
-          <span class="text-3xl font-extrabold">14 990 Kč/měs.</span>
+
+      <div class="rounded-2xl border border-slate-200 bg-white">
+        <div class="p-5">
+          <div class="flex items-baseline justify-between">
+            <span class="text-lg font-semibold">Max</span>
+            <span class="text-3xl font-extrabold">14 990 Kč/měs.</span>
+          </div>
         </div>
-        <ul class="space-y-2 text-sm text-slate-700">
-          <li class="flex gap-2"><span>•</span>20 ft kontejner (pronájem)</li>
-          <li class="flex gap-2"><span>•</span>Regály 6×</li>
-          <li class="flex gap-2"><span>•</span>LED osvětlení</li>
-          <li class="flex gap-2"><span>•</span>Zabezpečení + CCTV ready</li>
-          <li class="flex gap-2"><span>•</span>Doprava do 120 km</li>
-        </ul>
-        <a class="btn btn-primary w-full mt-6 rounded-2xl" href="#kontakt">Objednat</a>
+        <div class="px-5 pb-5">
+          <ul class="space-y-2 text-sm text-slate-700">
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>20 ft kontejner (pronájem)</li>
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>Regály 6×</li>
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>LED osvětlení</li>
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>Zabezpečení + CCTV ready</li>
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5"></i>Doprava do 120 km</li>
+          </ul>
+          <a href="#kontakt" class="w-full mt-6 rounded-2xl bg-blue-600 text-white px-4 py-2 inline-block text-center">Objednat</a>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- FAQ -->
   <section id="faq" class="bg-white border-y border-slate-200">
-    <div class="mx-auto container px-4 py-16">
-      <h2 class="text-3xl font-bold tracking-tight">Nejčastější dotazy</h2>
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="text-3l font-bold tracking-tight">Nejčastější dotazy</h2>
       <div class="mt-6 grid md:grid-cols-2 gap-6 text-sm text-slate-700">
-        <div class="card p-5"><h3 class="font-semibold mb-1">Za jak dlouho dodáte?</h3><p>Standardně do 48 hodin ve Zlínském a Jihomoravském kraji. Jinde dle dohody.</p></div>
-        <div class="card p-5"><h3 class="font-semibold mb-1">Je možná krátkodobá zápůjčka?</h3><p>Ano, od 1 týdne. Dlouhodobé pronájmy zvýhodňujeme.</p></div>
-        <div class="card p-5"><h3 class="font-semibold mb-1">Pomůžete s povolením?</h3><p>Poradíme se situováním na pozemku, podklady k ohlášení dodáme.</p></div>
-        <div class="card p-5"><h3 class="font-semibold mb-1">Jak řešíte zabezpečení?</h3><p>Silové zámky, bezpečnostní petlice, volitelně příprava na CCTV a GPS.</p></div>
+        <div class="rounded-2xl border border-slate-200 bg-white">
+          <div class="p-5 font-semibold">Za jak dlouho dodáte?</div>
+          <div class="px-5 pb-5">Standardně do 48 hodin ve Zlínském a Jihomoravském kraji. Jinde dle dohody.</div>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white">
+          <div class="p-5 font-semibold">Je možná krátkodobá zápůjčka?</div>
+          <div class="px-5 pb-5">Ano, od 1 týdne. Dlouhodobé pronájmy zvýhodňujeme.</div>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white">
+          <div class="p-5 font-semibold">Pomůžete s povolením?</div>
+          <div class="px-5 pb-5">Poradíme se situováním na pozemku, podklady k ohlášení dodáme.</div>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white">
+          <div class="p-5 font-semibold">Jak řešíte zabezpečení?</div>
+          <div class="px-5 pb-5">Silové zámky, bezpečnostní petlice, volitelně příprava na CCTV a GPS.</div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Kontakt -->
-  <section id="kontakt" class="mx-auto container px-4 py-16">
+  <section id="kontakt" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
     <div class="grid lg:grid-cols-2 gap-10 items-start">
       <div>
         <h2 class="text-3xl font-bold tracking-tight">Ozvěte se – navrhneme řešení</h2>
         <p class="mt-2 text-slate-600">Popište, co potřebujete skladovat a kde. Navrhneme kapacitu, zabezpečení i dopravu.</p>
         <div class="mt-6 space-y-3 text-slate-700">
-          <p class="flex items-center gap-2"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.09 4.18 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72 12.6 12.6 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.1 9.9a16 16 0 0 0 6 6l1.27-1.15a2 2 0 0 1 2.11-.45 12.6 12.6 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/></svg> +420 000 000 000 (doplníme)</p>
-          <p class="flex items-center gap-2"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg> info@mobilnisklad.cz</p>
-          <p class="flex items-center gap-2"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0Z"/><path d="M12 7v6l4 2"/></svg> Uherské Hradiště / Brno – doprava celá ČR</p>
+          <p class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4"></i> +420 000 000 000 (doplníme)</p>
+          <p class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4"></i> info@mobilnisklad.cz</p>
+          <p class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> Uherské Hradiště / Brno – doprava celá ČR</p>
         </div>
       </div>
-      <div class="card p-5">
-        <h3 class="text-lg font-semibold mb-4">Napište nám</h3>
-        <form class="space-y-3" onsubmit="event.preventDefault(); alert('Děkujeme za poptávku! Ozveme se.');">
+
+      <div class="rounded-2xl border border-slate-200 bg-white">
+        <div class="p-5 font-semibold">Napište nám</div>
+        <div class="px-5 pb-5 space-y-3">
           <div class="grid md:grid-cols-2 gap-3">
-            <input class="w-full rounded-xl border border-slate-300 px-3 py-2" placeholder="Jméno a příjmení" required />
-            <input class="w-full rounded-xl border border-slate-300 px-3 py-2" placeholder="E‑mail / Telefon" required />
+            <input class="w-full rounded-md border border-slate-300 px-3 py-2" placeholder="Jméno a příjmení" />
+            <input class="w-full rounded-md border border-slate-300 px-3 py-2" placeholder="E-mail / Telefon" />
           </div>
-          <input class="w-full rounded-xl border border-slate-300 px-3 py-2" placeholder="Lokalita (město/PSČ)" />
-          <textarea class="w-full rounded-xl border border-slate-300 px-3 py-2" rows="4" placeholder="Co chcete skladovat? Odhadovaný objem (palety/m²), délka pronájmu…"></textarea>
-          <button class="btn btn-primary w-full" type="submit">Odeslat poptávku</button>
+          <input class="w-full rounded-md border border-slate-300 px-3 py-2" placeholder="Lokalita (město/PSČ)" />
+          <textarea rows="4" class="w-full rounded-md border border-slate-300 px-3 py-2" placeholder="Co chcete skladovat? Odhadovaný objem (palety/m²), délka pronájmu…"></textarea>
+          <button class="rounded-2xl w-full bg-blue-600 text-white px-4 py-2">Odeslat poptávku</button>
           <p class="text-xs text-slate-500">Odesláním souhlasíte se zpracováním údajů pouze pro účely poptávky.</p>
-        </form>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
   <footer class="bg-slate-900 text-slate-100 mt-8">
-    <div class="mx-auto container px-4 py-10 grid md:grid-cols-4 gap-8">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 grid md:grid-cols-4 gap-8">
       <div>
         <div class="font-extrabold text-xl">mobilnisklad.cz</div>
         <p class="text-sm text-slate-400 mt-2">Součást AO Group. Mobilní sklady a kontejnery pro firmy i živnostníky.</p>
@@ -309,53 +364,59 @@
           <li>Uherské Hradiště / Brno</li>
         </ul>
         <div class="mt-4 flex gap-2">
-          <span class="badge">IČO doplníme</span>
-          <span class="badge" style="border-color:rgba(22,163,74,.2);background:rgba(22,163,74,.1);color:#16a34a">ŽL Zednictví</span>
+          <span class="rounded px-2 py-1 text-xs bg-blue-600/20 text-blue-300 border border-blue-600/20">IČO doplníme</span>
+          <span class="rounded px-2 py-1 text-xs bg-green-600/20 text-green-300 border border-green-600/20">ŽL Zednictví</span>
         </div>
       </div>
     </div>
-    <div class="border-t border-slate-800 text-xs text-slate-400 py-4 text-center">© <span id="y"></span> mobilnisklad.cz • Všechna práva vyhrazena</div>
+    <div class="border-t border-slate-800 text-xs text-slate-400 py-4 text-center">© <span id="year"></span> mobilnisklad.cz • Všechna práva vyhrazena</div>
   </footer>
 
   <script>
-    // Rok v patičce
-    document.getElementById('y').textContent = new Date().getFullYear();
-
-    // Hamburger: overlay fixně pod sticky headerem
-    const btn = document.getElementById('menuBtn');
-    const overlay = document.getElementById('mobileOverlay');
-    const overlayBg = document.getElementById('overlayBg');
-    const mobileNav = document.getElementById('mobileNav');
-    const siteHeader = document.getElementById('siteHeader');
-
-    const positionMenu = () => {
-      const h = siteHeader.getBoundingClientRect().height;
-      mobileNav.style.top = h + 'px';
-    };
-    const openMenu = () => {
-      positionMenu();
-      overlay.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-      btn.setAttribute('aria-label', 'Zavřít menu');
-      btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
-    };
-    const closeMenu = () => {
-      overlay.classList.add('hidden');
-      document.body.style.overflow = '';
-      btn.setAttribute('aria-label', 'Otevřít menu');
-      btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>';
-    };
-
-    btn.addEventListener('click', () => {
-      if (overlay.classList.contains('hidden')) openMenu(); else closeMenu();
+    // Ikony
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) lucide.createIcons();
+      const y = document.getElementById('year');
+      if (y) y.textContent = new Date().getFullYear();
     });
-    overlayBg.addEventListener('click', closeMenu);
-    document.querySelectorAll('#mobileNav a').forEach(a => a.addEventListener('click', closeMenu));
 
-    window.addEventListener('resize', () => {
-      positionMenu();
-      if (window.innerWidth >= 768) closeMenu();
-    });
+    // Hamburger overlay
+    (function () {
+      const btn = document.getElementById('hamburgerBtn');
+      const menu = document.getElementById('mobile-menu');
+      const icon = document.getElementById('hamburgerIcon');
+      const header = document.getElementById('site-header');
+      let prevOverflow = '';
+
+      function setMenuTop(){
+        const h = header ? header.offsetHeight : 64; // měřeno dynamicky
+        menu.style.top = h + 'px';
+      }
+
+      function openMenu() {
+        setMenuTop();
+        menu.classList.remove('hidden');
+        prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        btn.setAttribute('aria-expanded', 'true');
+        btn.setAttribute('aria-label', 'Zavřít menu');
+        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>';
+      }
+      function closeMenu() {
+        menu.classList.add('hidden');
+        document.body.style.overflow = prevOverflow || '';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('aria-label', 'Otevřít menu');
+        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>';
+      }
+      function isOpen() { return !menu.classList.contains('hidden'); }
+
+      btn.addEventListener('click', () => { isOpen() ? closeMenu() : openMenu(); });
+      menu.addEventListener('click', (e) => { const t = e.target; if (t.tagName === 'A' || (t.closest('a') && t.closest('a').getAttribute('href'))) closeMenu(); });
+      window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen()) closeMenu(); });
+      window.addEventListener('resize', () => { setMenuTop(); if (window.innerWidth >= 768 && isOpen()) closeMenu(); });
+      window.addEventListener('load', setMenuTop);
+    })();
   </script>
 </body>
 </html>
